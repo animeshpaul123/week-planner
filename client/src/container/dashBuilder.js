@@ -46,12 +46,12 @@ class DashBuilder extends Component {
     addDescChangeHandler = (e) => {
 
         const value = e.target.value;
-        this.setState({title: value})
+        this.setState({desc: value})
         console.log(this.state.title)
     }
     addTitleChangeHandler = (e) => {
         const value = e.target.value;
-        this.setState({desc: value})
+        this.setState({title: value})
         console.log(this.state.desc)
     }
     editableHandler = (e, id) => {
