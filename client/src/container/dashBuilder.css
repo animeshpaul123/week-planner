@@ -14,7 +14,7 @@ div.col:not(:last-of-type) {
   border-radius: 4px;
   box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1); }
   .cards-wrap h3 {
-    font-size: 1.45rem;
+    font-size: 1.2rem;
     margin-bottom: 12px; }
   .cards-wrap textarea {
     margin: 5px;
