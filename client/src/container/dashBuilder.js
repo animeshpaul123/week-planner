@@ -21,10 +21,6 @@ class DashBuilder extends Component {
             .then(res => {
                 this.setState({cards: res.data, loading: false})
             })
-        console.log("from componentDidMount")
-    }
-    componentDidUpdate () {
-        console.log('component did update')
     }
     addCardHandler = () => {
         const title = this.state.title;
@@ -135,7 +131,8 @@ class DashBuilder extends Component {
                         changed={(e) => this.updateCardHandler(e, card._id)}
                         isComplete={card.completed}
                         key={card._id}
-                        completeClick={this.completeHandler.bind(this, card._id)}/>
+                        completeClick={this.completeHandler.bind(this, card._id)}
+                        date={card.date}/>
                 )
             })
             completedFilterPosts = this.state.cards.filter((card, i) => {
@@ -151,7 +148,8 @@ class DashBuilder extends Component {
                         changed={(e) => this.updateCardHandler(e, card._id)}
                         isComplete={!this.state.loading}
                         key={card._id}
-                        completeClick={this.completeHandler.bind(this, card._id)}/>
+                        completeClick={this.completeHandler.bind(this, card._id)}
+                        date={card.date}/>
                 )
             })
         }
@@ -184,7 +182,8 @@ class DashBuilder extends Component {
                                     remove={this.removeCardHandler.bind(this, card._id)}
                                     isComplete={this.state.loading}
                                     key={card._id}
-                                    completeClick={this.completeHandler.bind(this, card._id)}/>
+                                    completeClick={this.completeHandler.bind(this, card._id)}
+                                    date={card.date}/>
                             )
                         })}
                         </div>

@@ -10,9 +10,12 @@ const card = (props) => {
     else {
         styles.push("completed-card")
     }
+
+    let dateNow = new Date(props.date)
+    let currentDate = dateNow.toDateString().slice(0, 11)
     return (
         <div className={styles.join(" ")}>
-            <h2 className="card-heading">{props.cardHeading}</h2>
+            <h2 className="card-heading">{props.cardHeading} <span className="date">{currentDate}</span></h2>
             <div className="card-desc">
                 {props.desc}
             </div>
