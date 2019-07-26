@@ -1,0 +1,42 @@
+.row {
+    margin: 0 !important;
+    padding: 0 12px;
+    .col-md-3 {
+        padding: 0 8px;
+    }
+  }
+  div.col:not(:last-of-type) {
+    border-right: 1px solid #ccc;
+  }
+  .cards-wrap {
+    padding: 16px 9px;
+    // background: antiquewhite;
+    // background: #3e499c;
+    background: #ddd;
+    margin: 10px 0;
+    border-radius: 4px;
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+    h3 {
+        font-size: 1.45rem;
+        margin-bottom: 12px;
+    }
+    textarea {
+        margin: 5px;
+        border: none;
+        box-shadow: 0 0 3px 0px inset rgba(143, 147, 154, 0.63);
+        font-size: 0.9rem;
+        padding: 10px;
+        font-size: 12px;
+        border-radius: 3px;
+        &::placeholder {
+            font-size: 0.9rem;
+        }
+    }
+  }
+  .spin {
+      min-height: 500px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  }
+  

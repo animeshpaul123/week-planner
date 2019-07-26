@@ -4,9 +4,12 @@
   "description": "a dashboard application",
   "main": "server.js",
   "scripts": {
+    "client-install": "npm install --prefix client",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "server": "nodemon server.js"
+    "client": "npm start --prefix client",
+    "server": "nodemon server.js",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "author": "Animesh Paul",
   "license": "MIT",
@@ -15,6 +18,7 @@
     "concurrently": "^4.1.1",
     "express": "^4.17.1",
     "mongoose": "^5.6.6",
-    "nodemon": "^1.19.1"
+    "nodemon": "^1.19.1",
+    "react-router-dom": "^5.0.1"
   }
 }

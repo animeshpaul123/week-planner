@@ -1,0 +1,37 @@
+.card {
+    background: #fff;
+    margin-bottom: 20px;
+    border: none;
+    position: relative;
+    .card-desc {
+        min-height: 100px;
+        text-align: left;
+        padding: 10px;
+        font-size: 0.8rem;
+    }
+    .card-heading {
+        text-align: left;
+        font-size: 1.2rem;
+        padding: 7px 10px;
+    }
+}
+.unComplete-card {
+    transition: all 0.3s ease-out;
+    .cross {
+        display: none;
+        transition: all 0.3s ease-out;
+        cursor: pointer;
+        &:hover {
+            text-decoration: line-through;
+        }
+    }
+    &:hover {
+        background: #fd9176;
+    }
+    &:hover .cross {
+        display: block;
+    }
+}
+.completed-card {
+    background: #d0c07f;
+}

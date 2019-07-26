@@ -1,0 +1,20 @@
+.dashboard {
+    max-width: 1200px;
+    margin: 100px auto 0;
+    width: 100%;
+    box-shadow: 0 3px 20px rgba(0, 0, 0, 0.1);
+    background: #fff;
+    border-radius: 4px;
+    .dash-heading {
+        text-align: center;
+        padding: 15px 0;
+        margin: 0;
+        border-bottom: 1px dashed #ccc;
+        font-weight: 700;
+        color: darkblue;
+        letter-spacing: 1px;
+    }
+    .dash-wrapper {
+        width: 100%;
+    }
+}

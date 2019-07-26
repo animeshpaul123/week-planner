@@ -1,0 +1,14 @@
+.buttons {
+    border-top: 1px dashed #ccc;
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px;
+    p {
+        color: #0058f6;
+        margin: 0 10px 0 0;
+        cursor: pointer;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
