@@ -1,203 +1,156 @@
 import React, { Component } from 'react';
-import { Row, Col } from 'reactstrap';
+import { Row } from 'reactstrap';
 import Card from '../component/card/card';
 import './dashBuilder.css'
 import axios from 'axios'
-import CardInput from '../component/cardInput/cardInput';
-import Spinner from '../component/UI/Spinners/Spinner';
+import NewTodos from './NewTodo';
 
 class DashBuilder extends Component {
-
     state = {
-        loading: true,
-        cards: [],
+        cards: [{ name: "hello", desc: "a djncjdnc djncjd", completed: false, date: new Date(), editable: false, }, { name: "hi", desc: "a djncjdnc djncjd", completed: true, date: new Date(), editable: false, },],
         title: null,
         desc: null,
-        deleted: null,
+        input: {
+            name: {
+                validation: {
+                    required: true,
+                    minLength: 3,
+                },
+                valid: false,
+                touched: false,
+            },
+            desc: {
+                validation: {
+                    required: true,
+                    minLength: 5,
+                },
+                valid: false,
+                touched: false,
+            }
+        },
+        valid: false
     }
-    componentDidMount () {
-        
-        axios.get('/api/posts')
-            .then(res => {
-                this.setState({cards: res.data, loading: false})
-            })
+    componentWillMount() {
+        this.axiosHandler(true)
+    }
+    checkValidity = (value, rules) => {
+        let isValid = true
+        if (rules.required) {
+            isValid = value.trim() !== '' && isValid
+        }
+        if (rules.minLength) {
+            isValid = value.length >= rules.minLength && isValid
+        }
+        return isValid
     }
     addCardHandler = () => {
-        const title = this.state.title;
-        const desc = this.state.desc;
-        const data = {
-            name: title,
-            desc: desc,
+        const postData = { name: this.state.title, desc: this.state.desc }
+        this.axiosHandler(null, postData)
+    }
+    axiosHandler = (getData, postData, putData, id) => {
+        if (getData) {
+            axios.get('/api/posts')
+                .then(res => {
+                    this.setState({ cards: res.data })
+                })
         }
-        this.setState({loading: true})
-        axios.post('/api/posts', data)
-            .then(res => {
-                const cards = [
-                    ...this.state.cards
-                ]
-                cards.push(res.data)
-                this.setState({cards: cards, loading: false})
-            })
-    }
-    addDescChangeHandler = (e) => {
+        if (postData) {
+            axios.post('/api/posts', postData)
+                .then(res => {
+                    const cards = [...this.state.cards]
+                    cards.push(res.data)
+                    this.setState({ cards: cards })
+                })
 
-        const value = e.target.value;
-        this.setState({desc: value})
-        console.log(this.state.title)
+        }
+        if (putData) {
+            axios.put(`/api/posts/${id}`, putData)
+        }
     }
-    addTitleChangeHandler = (e) => {
-        const value = e.target.value;
-        this.setState({title: value})
-        console.log(this.state.desc)
+    addDescChangeHandler = e => {
+        const input = {...this.state.input},content = input.desc
+        content.valid = this.checkValidity(e.target.value, content.validation)
+        content.touched = true
+        this.setState({ desc: e.target.value, input: input })
+    }
+    addTitleChangeHandler = e => {
+        const input = {...this.state.input},content = input.name
+        content.valid = this.checkValidity(e.target.value, content.validation)
+        content.touched = true
+        this.setState({ title: e.target.value, input: input })
     }
     editableHandler = (e, id) => {
-        let cards = [
-            ...this.state.cards
-        ]
-        cards.find((card, i) => {
-            let temp = '';
-            if(card._id === id) {
-                temp = card
-                temp.editable = true;
-                cards[i] = temp;
+        let cards = [...this.state.cards]
+        cards.forEach((card, i) => {
+            if (card._id === id) {
+                cards[i].editable = true;
             }
         })
-        this.setState({cards: cards})
+        this.setState({ cards: cards })
     }
+
     updateCardHandler = (e, id) => {
-        
-        
-        const body = {
-            desc: e.target.value
+        const putData = { desc: e.target.value }
+        const cards = [...this.state.cards]
+        if (e.key === 'Enter') {
+            cards.forEach((card, i) => {
+                if (card._id === id) {
+                    cards[i].editable = false
+                    cards[i].desc = putData.desc
+                }
+            })
+            this.setState({ cards: cards })
+            this.axiosHandler(null, null, putData, id)
         }
-        if(e.key === 'Enter') {
-            this.setState({loading: true})
-            this.axiosPut(id, body)
-            
-        }
-
     }
+
     completeHandler = (id) => {
-        const body = {
-            completed: true
-        }
-        this.setState({loading: true})
-        this.axiosPut(id, body)
-
-    }
-    axiosPut = (id, body) => {
-        axios.put(`/api/posts/${id}`, body)
-                .then(res => {
-                    const cards = [
-                        ...this.state.cards
-                    ]
-                    cards.map((card, i) => {
-                        if(card._id === id) {
-                            cards[i] = res.data
-                        }
-                        
-                    })
-                    this.setState({cards: cards, loading: false})
-                })
+        const putData = { completed: true }
+        const cards = [...this.state.cards]
+        cards.forEach((card, i) => {
+            if (card._id === id) {
+                cards[i].completed = true
+            }
+        })
+        this.setState({ cards: cards })
+        this.axiosHandler(null, null, putData, id)
     }
     removeCardHandler = (id) => {
-        this.setState({loading: true})
+        const cards = [...this.state.cards]
+        let newCards = cards.filter(card => card._id !== id)
+        this.setState({ cards: newCards })
         axios.delete(`/api/posts/${id}`)
-            .then((res1) => {
-                axios.get('/api/posts')
-                    .then(res => {
-                        this.setState({cards: res.data,deleted: res1.data.message, loading: false})
-                    })
-            })
     }
-    render () {
-        let posts = []
-        let filterPosts = []
-        let completedPosts = []
-        let completedFilterPosts = []
-        let firstPost = [];
-        let FilterPost = []
-        if(!this.state.loading) {
-            filterPosts = this.state.cards.filter((card, i) => {
-                return card.completed !== true
-            })
-            posts = filterPosts.map(card => {
-                return (
-                    <Card cardHeading={card.name}
-                        desc={card.desc}
-                        editable={card.editable}
-                        edit={(e) => this.editableHandler(e, card._id)}
-                        remove={this.removeCardHandler.bind(this, card._id)}
-                        changed={(e) => this.updateCardHandler(e, card._id)}
-                        isComplete={card.completed}
-                        key={card._id}
-                        completeClick={this.completeHandler.bind(this, card._id)}
-                        date={card.date}/>
-                )
-            })
-            completedFilterPosts = this.state.cards.filter((card, i) => {
-                return card.completed === true
-            })
-            completedPosts = completedFilterPosts.map(card => {
-                return (
-                    <Card cardHeading={card.name}
-                        desc={card.desc}
-                        editable={card.editable}
-                        edit={(e) => this.editableHandler(e, card._id)}
-                        remove={this.removeCardHandler.bind(this, card._id)}
-                        changed={(e) => this.updateCardHandler(e, card._id)}
-                        isComplete={!this.state.loading}
-                        key={card._id}
-                        completeClick={this.completeHandler.bind(this, card._id)}
-                        date={card.date}/>
-                )
-            })
+
+    render() {
+        let posts = [], completedPosts = []
+        const mapcards = (card, editable, completed) => {
+            return (
+                <Card cardHeading={card.name} desc={card.desc} editable={editable}
+                    edit={(e) => this.editableHandler(e, card._id)}
+                    remove={this.removeCardHandler.bind(this, card._id)}
+                    changed={(e) => this.updateCardHandler(e, card._id)}
+                    isComplete={completed} key={card._id}
+                    completeClick={() => this.completeHandler(card._id)} date={card.date} />
+            )
         }
+        posts = this.state.cards.filter((card, i) => {
+            return card.completed !== true
+        }).map(card => mapcards(card, card.editable, card.completed))
+
+        completedPosts = this.state.cards.filter((card, i) => {
+            return card.completed === true
+        }).map(card => mapcards(card, false, card.completed))
         return (
             <div className="dash-inner">
-                {this.state.loading ? <div className="spin"><Spinner /></div> : <Row>
-                    <Col md="3">
-                        <div className="cards-wrap">
-                            <h3>Create Plan</h3>
-                        {firstPost}
-                        <CardInput titleChanged={this.addTitleChangeHandler}
-                            addCard={this.addCardHandler}
-                            descChanged={this.addDescChangeHandler}/>
-                        </div>
-                    </Col>
-                    <Col md="3">
-                        <div className="cards-wrap">
-                        <h3>To Do</h3>
-                        {posts}
-                        </div>
-                    </Col>
-                    <Col md="3">
-                        <div className="cards-wrap">
-                        <h3>Progress</h3>
-                        {this.state.cards.map(card => {
-                            return (
-                                <Card cardHeading={card.name}
-                                    desc={card.desc}
-                                    editable={this.state.loading}
-                                    remove={this.removeCardHandler.bind(this, card._id)}
-                                    isComplete={this.state.loading}
-                                    key={card._id}
-                                    completeClick={this.completeHandler.bind(this, card._id)}
-                                    date={card.date}/>
-                            )
-                        })}
-                        </div>
-                    </Col>
-                    <Col md="3">
-                        <div className="cards-wrap">
-                        <h3>Completed</h3>
-                        {completedPosts}
-                        </div>
-                    </Col>
-                </Row>}
+                <Row>
+                    <NewTodos input={this.state.input}titleChanged={this.addTitleChangeHandler} addCard={this.addCardHandler} descChanged={this.addDescChangeHandler} heading="Create Plan" iValue={this.state.title} tValue={this.state.desc}/>
+                    <NewTodos cards={posts} heading="New Todos" />
+                    <NewTodos cards={this.state.cards.map(card => mapcards(card, card.editable, false))} heading="Progress" />
+                    <NewTodos cards={completedPosts} heading="Completed Todos" />
+                </Row>
             </div>
         )
     }
 }
-
 export default DashBuilder;
